@@ -10,7 +10,7 @@ import sys
 import time
 
 class RotatableContainer(QGraphicsView):
-    def __init__(self, widget: QWidget, degree: float):
+    def __init__(self, widget: QWidget, rotation: float):
         super(QGraphicsView, self).__init__()
 
         scene = QGraphicsScene(self)
@@ -19,10 +19,11 @@ class RotatableContainer(QGraphicsView):
         self.proxy = QGraphicsProxyWidget()
         self.proxy.setWidget(widget)
         self.proxy.setTransformOriginPoint(self.proxy.boundingRect().center())
+        self.proxy.setRotation(rotation)
         scene.addItem(self.proxy)
 
-    def rotate(self, degree: float):
-        self.proxy.setRotation(degree)
+    def rotate(self, rotation: float):
+        self.proxy.setRotation(rotation)
 
 
 class MainWindow(QMainWindow):
@@ -35,21 +36,24 @@ class MainWindow(QMainWindow):
         # Widget you want to rotate
         label = QLabel("Stack Overflow", alignment=Qt.AlignCenter)
         # Container you place the widget in
-        container = RotatableContainer(label, 90)
+        container = RotatableContainer(widget=label, rotation=0)
 
         # Create slider and connect to the rotate method in the container
         slider = QSlider(minimum=0, maximum=359, orientation=Qt.Horizontal)
-        # slider.valueChanged.connect(proxy.setRotation)
         slider.valueChanged.connect(container.rotate)
 
         label_text = QLabel("{}°".format(slider.value()), alignment=Qt.AlignCenter)
         slider.valueChanged.connect(lambda value: label_text.setText("{}°".format(slider.value())))
-        slider.setValue(45)
+        # slider.setValue(45)
+
+        label2 = QLabel("Jordan", alignment=Qt.AlignCenter)
+        container2 = RotatableContainer(widget=label2, rotation=45)
 
         # Display the widgets
         w = QWidget()
         lay = QVBoxLayout(w)
         lay.addWidget(container)
+        lay.addWidget(container2)
         lay.addWidget(slider)
         lay.addWidget(label_text)
         w.resize(640, 480)
